@@ -76,6 +76,9 @@ class SmartAudioManager(private val context: Context) {
             val fadeOutDuration = settings["fadeOutDuration"] as? Int
             val playInBackground = settings["playInBackground"] as? Boolean ?: true
 
+            // Debug logging
+            android.util.Log.d("SmartAudioManager", "Playing audio: path=$audioPath, sourceType=$sourceType, loop=$loop, volume=$volume")
+
             // Stop any currently playing audio
             stopAudio()
 
@@ -94,13 +97,42 @@ class SmartAudioManager(private val context: Context) {
                 // Set data source based on type
                 when (sourceType) {
                     "asset" -> {
-                        val assetFileDescriptor = context.assets.openFd(audioPath)
-                        setDataSource(
-                            assetFileDescriptor.fileDescriptor,
-                            assetFileDescriptor.startOffset,
-                            assetFileDescriptor.length
-                        )
-                        assetFileDescriptor.close()
+                        // Normalize asset path - remove 'assets/' prefix if present
+                        val normalizedPath = if (audioPath.startsWith("assets/")) {
+                            audioPath.substring(7) // Remove 'assets/' prefix
+                        } else {
+                            audioPath
+                        }
+
+                        android.util.Log.d("SmartAudioManager", "Normalized asset path: $normalizedPath")
+
+                        try {
+                            val assetFileDescriptor = context.assets.openFd(normalizedPath)
+                            setDataSource(
+                                assetFileDescriptor.fileDescriptor,
+                                assetFileDescriptor.startOffset,
+                                assetFileDescriptor.length
+                            )
+                            assetFileDescriptor.close()
+                            android.util.Log.d("SmartAudioManager", "Successfully loaded asset: $normalizedPath")
+                        } catch (e: Exception) {
+                            android.util.Log.w("SmartAudioManager", "Failed to load asset '$normalizedPath', trying with audio/ prefix: ${e.message}")
+                            // If the normalized path fails, try with 'audio/' prefix
+                            val audioPathWithPrefix = if (normalizedPath.startsWith("audio/")) {
+                                normalizedPath
+                            } else {
+                                "audio/$normalizedPath"
+                            }
+                            android.util.Log.d("SmartAudioManager", "Trying asset path with prefix: $audioPathWithPrefix")
+                            val assetFileDescriptor = context.assets.openFd(audioPathWithPrefix)
+                            setDataSource(
+                                assetFileDescriptor.fileDescriptor,
+                                assetFileDescriptor.startOffset,
+                                assetFileDescriptor.length
+                            )
+                            assetFileDescriptor.close()
+                            android.util.Log.d("SmartAudioManager", "Successfully loaded asset with prefix: $audioPathWithPrefix")
+                        }
                     }
                     "file" -> {
                         val file = File(audioPath)

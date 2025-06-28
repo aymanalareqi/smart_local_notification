@@ -67,7 +67,7 @@ class AudioManager: NSObject {
             print("AudioManager: Audio path is required")
             return
         }
-        
+
         let sourceType = settings["sourceType"] as? String ?? "asset"
         let loop = settings["loop"] as? Bool ?? false
         let volume = settings["volume"] as? Float ?? 1.0
@@ -75,6 +75,9 @@ class AudioManager: NSObject {
         let fadeOutDuration = settings["fadeOutDuration"] as? Int
         let playInBackground = settings["playInBackground"] as? Bool ?? true
         let respectSilentMode = settings["respectSilentMode"] as? Bool ?? false
+
+        // Debug logging
+        print("AudioManager: Playing audio - path: \(audioPath), sourceType: \(sourceType), loop: \(loop), volume: \(volume)")
         
         // Stop any currently playing audio
         stopAudio()
@@ -136,15 +139,26 @@ class AudioManager: NSObject {
         case "asset":
             // Remove 'assets/' prefix if present
             let assetPath = path.hasPrefix("assets/") ? String(path.dropFirst(7)) : path
-            
+            print("AudioManager: Normalized asset path: \(assetPath)")
+
             // Get the file name and extension
             let pathComponents = assetPath.components(separatedBy: ".")
-            guard pathComponents.count >= 2 else { return nil }
-            
+            guard pathComponents.count >= 2 else {
+                print("AudioManager: Invalid asset path format: \(assetPath)")
+                return nil
+            }
+
             let fileName = pathComponents.dropLast().joined(separator: ".")
             let fileExtension = pathComponents.last!
-            
-            return Bundle.main.url(forResource: fileName, withExtension: fileExtension)
+            print("AudioManager: Looking for asset - fileName: \(fileName), extension: \(fileExtension)")
+
+            let url = Bundle.main.url(forResource: fileName, withExtension: fileExtension)
+            if url != nil {
+                print("AudioManager: Successfully found asset URL: \(url!)")
+            } else {
+                print("AudioManager: Failed to find asset in bundle: \(fileName).\(fileExtension)")
+            }
+            return url
             
         case "file":
             return URL(fileURLWithPath: path)

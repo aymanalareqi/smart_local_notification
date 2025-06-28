@@ -98,6 +98,32 @@ class NotificationHelper {
     return pluginPermissions && notificationStatus.isGranted;
   }
 
+  /// Debug method to validate the default audio file.
+  static Future<Map<String, dynamic>> validateDefaultAudioFile() async {
+    const audioPath = 'assets/audio/athan.mp3';
+    const sourceType = AudioSourceType.asset;
+
+    try {
+      final validationResult =
+          await AudioFileManager.validateAudioSettings(audioPath, sourceType);
+
+      return {
+        'isValid': validationResult.isValid,
+        'error': validationResult.error,
+        'normalizedPath': validationResult.normalizedPath,
+        'fileExtension': validationResult.fileExtension,
+        'mimeType': validationResult.mimeType,
+        'originalPath': audioPath,
+      };
+    } catch (e) {
+      return {
+        'isValid': false,
+        'error': 'Validation failed: $e',
+        'originalPath': audioPath,
+      };
+    }
+  }
+
   /// Get the next notification ID.
   static int getNextId() {
     return _notificationIdCounter++;
@@ -119,8 +145,7 @@ class NotificationHelper {
         silent: true,
       ),
       audioSettings: AudioSettings(
-        audioPath: audioPath ??
-            'assets/audio/athan.mp3', // Will be prefixed with assets/ automatically
+        audioPath: audioPath ?? 'assets/audio/athan.mp3', // Full asset path
         sourceType: AudioSourceType.asset,
         loop: loop,
         volume: 0.8,

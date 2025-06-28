@@ -80,6 +80,62 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Future<void> _debugAudioValidation() async {
+    try {
+      final result = await NotificationHelper.validateDefaultAudioFile();
+
+      if (!mounted) return;
+
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Audio Validation Debug'),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Original Path: ${result['originalPath']}'),
+                const SizedBox(height: 8),
+                Text('Is Valid: ${result['isValid']}'),
+                const SizedBox(height: 8),
+                if (result['normalizedPath'] != null)
+                  Text('Normalized Path: ${result['normalizedPath']}'),
+                const SizedBox(height: 8),
+                if (result['fileExtension'] != null)
+                  Text('File Extension: ${result['fileExtension']}'),
+                const SizedBox(height: 8),
+                if (result['mimeType'] != null)
+                  Text('MIME Type: ${result['mimeType']}'),
+                const SizedBox(height: 8),
+                if (result['error'] != null)
+                  Text('Error: ${result['error']}',
+                      style: const TextStyle(color: Colors.red)),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Close'),
+            ),
+            if (result['isValid'] == true)
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  _showNotification(
+                      NotificationHelper.createAssetAudioNotification());
+                },
+                child: const Text('Test Audio'),
+              ),
+          ],
+        ),
+      );
+    } catch (e) {
+      _showErrorSnackBar('Debug failed: $e');
+    }
+  }
+
   Future<void> _showNotification(SmartNotification notification) async {
     final success = await SmartLocalNotification.showNotification(notification);
     if (success) {
@@ -179,6 +235,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   onTap: () => _showNotification(
                     NotificationHelper.createReminderNotification(),
                   ),
+                ),
+                NotificationCard(
+                  title: 'Debug Audio Validation',
+                  description: 'Test audio file validation and path resolution',
+                  icon: Icons.bug_report,
+                  color: Colors.orange,
+                  onTap: _debugAudioValidation,
                 ),
                 NotificationCard(
                   title: 'Custom Audio File',
