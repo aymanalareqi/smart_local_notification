@@ -157,13 +157,114 @@ class NotificationHelper {
       title: title ?? 'Scheduled Notification',
       body: body ??
           'This notification was scheduled for ${scheduledTime.toString()}',
-      scheduledTime: scheduledTime,
+      schedule: NotificationSchedule.oneTime(
+        scheduledTime: scheduledTime,
+      ),
       notificationSettings: const NotificationSettings(
         priority: NotificationPriority.defaultPriority,
         silent: true,
       ),
       audioSettings: AudioSettings(
-        audioPath: audioPath ?? 'assets/audio/scheduled.mp3',
+        audioPath: audioPath ?? 'scheduled.mp3',
+        sourceType: AudioSourceType.asset,
+        loop: false,
+        volume: 0.7,
+      ),
+    );
+  }
+
+  /// Create a daily recurring notification.
+  static SmartNotification createDailyNotification({
+    String? title,
+    String? body,
+    String? audioPath,
+    required DateTime time,
+    DateTime? endDate,
+    int? maxOccurrences,
+  }) {
+    return SmartNotification(
+      id: getNextId(),
+      title: title ?? 'Daily Reminder',
+      body: body ?? 'This is your daily reminder',
+      schedule: NotificationSchedule.daily(
+        scheduledTime: time,
+        endDate: endDate,
+        maxOccurrences: maxOccurrences,
+      ),
+      notificationSettings: const NotificationSettings(
+        priority: NotificationPriority.high,
+        silent: true,
+      ),
+      audioSettings: AudioSettings(
+        audioPath: audioPath ?? 'reminder.mp3',
+        sourceType: AudioSourceType.asset,
+        loop: false,
+        volume: 0.8,
+      ),
+    );
+  }
+
+  /// Create a weekly recurring notification.
+  static SmartNotification createWeeklyNotification({
+    String? title,
+    String? body,
+    String? audioPath,
+    required DateTime time,
+    List<WeekDay>? weekDays,
+    DateTime? endDate,
+    int? maxOccurrences,
+  }) {
+    return SmartNotification(
+      id: getNextId(),
+      title: title ?? 'Weekly Reminder',
+      body: body ?? 'This is your weekly reminder',
+      schedule: NotificationSchedule.weekly(
+        scheduledTime: time,
+        weekDays: weekDays,
+        endDate: endDate,
+        maxOccurrences: maxOccurrences,
+      ),
+      notificationSettings: const NotificationSettings(
+        priority: NotificationPriority.high,
+        silent: true,
+      ),
+      audioSettings: AudioSettings(
+        audioPath: audioPath ?? 'reminder.mp3',
+        sourceType: AudioSourceType.asset,
+        loop: false,
+        volume: 0.8,
+      ),
+    );
+  }
+
+  /// Create a custom interval notification.
+  static SmartNotification createCustomIntervalNotification({
+    String? title,
+    String? body,
+    String? audioPath,
+    required DateTime startTime,
+    required int interval,
+    required String intervalUnit,
+    DateTime? endDate,
+    int? maxOccurrences,
+  }) {
+    return SmartNotification(
+      id: getNextId(),
+      title: title ?? 'Custom Interval Reminder',
+      body: body ?? 'This reminder repeats every $interval $intervalUnit',
+      schedule: NotificationSchedule.custom(
+        scheduledTime: startTime,
+        interval: interval,
+        intervalUnit: intervalUnit,
+        endDate: endDate,
+        maxOccurrences: maxOccurrences,
+      ),
+      notificationSettings: const NotificationSettings(
+        priority: NotificationPriority.defaultPriority,
+        silent: true,
+      ),
+      audioSettings: AudioSettings(
+        audioPath: audioPath ?? 'notification.mp3',
         sourceType: AudioSourceType.asset,
         loop: false,
         volume: 0.7,

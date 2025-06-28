@@ -1,5 +1,6 @@
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'models/smart_notification.dart';
+import 'models/scheduled_notification_info.dart';
 import 'smart_local_notification_method_channel.dart';
 
 /// The interface that implementations of smart_local_notification must implement.
@@ -15,7 +16,8 @@ abstract class SmartLocalNotificationPlatform extends PlatformInterface {
 
   static final Object _token = Object();
 
-  static SmartLocalNotificationPlatform _instance = MethodChannelSmartLocalNotification();
+  static SmartLocalNotificationPlatform _instance =
+      MethodChannelSmartLocalNotification();
 
   /// The default instance of [SmartLocalNotificationPlatform] to use.
   ///
@@ -47,7 +49,8 @@ abstract class SmartLocalNotificationPlatform extends PlatformInterface {
 
   /// Cancel all notifications.
   Future<bool> cancelAllNotifications() {
-    throw UnimplementedError('cancelAllNotifications() has not been implemented.');
+    throw UnimplementedError(
+        'cancelAllNotifications() has not been implemented.');
   }
 
   /// Stop audio playback.
@@ -67,6 +70,46 @@ abstract class SmartLocalNotificationPlatform extends PlatformInterface {
 
   /// Check if notification permissions are granted.
   Future<bool> arePermissionsGranted() {
-    throw UnimplementedError('arePermissionsGranted() has not been implemented.');
+    throw UnimplementedError(
+        'arePermissionsGranted() has not been implemented.');
+  }
+
+  /// Schedules a notification for future delivery.
+  Future<bool> scheduleNotification(SmartNotification notification) {
+    throw UnimplementedError(
+        'scheduleNotification() has not been implemented.');
+  }
+
+  /// Cancels a scheduled notification by ID.
+  Future<bool> cancelScheduledNotification(int id) {
+    throw UnimplementedError(
+        'cancelScheduledNotification() has not been implemented.');
+  }
+
+  /// Cancels all scheduled notifications.
+  Future<bool> cancelAllScheduledNotifications() {
+    throw UnimplementedError(
+        'cancelAllScheduledNotifications() has not been implemented.');
+  }
+
+  /// Gets scheduled notifications based on query parameters.
+  Future<List<ScheduledNotificationInfo>> getScheduledNotifications(
+      [ScheduledNotificationQuery? query]) {
+    throw UnimplementedError(
+        'getScheduledNotifications() has not been implemented.');
+  }
+
+  /// Updates a scheduled notification.
+  Future<bool> updateScheduledNotification(
+      String scheduleId, Map<String, dynamic> updates) {
+    throw UnimplementedError(
+        'updateScheduledNotification() has not been implemented.');
+  }
+
+  /// Schedules multiple notifications in a batch operation.
+  Future<BatchScheduleResult> batchScheduleNotifications(
+      List<SmartNotification> notifications) {
+    throw UnimplementedError(
+        'batchScheduleNotifications() has not been implemented.');
   }
 }

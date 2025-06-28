@@ -38,5 +38,11 @@
             android:name=".NotificationReceiver"
             android:enabled="true"
             android:exported="false" />
+
+        <!-- Scheduled notification receiver -->
+        <receiver
+            android:name=".ScheduledNotificationReceiver"
+            android:enabled="true"
+            android:exported="false" />
     </application>
 </manifest>

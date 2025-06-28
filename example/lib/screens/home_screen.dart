@@ -4,7 +4,8 @@ import '../utils/notification_helper.dart';
 import '../widgets/notification_card.dart';
 import '../widgets/audio_status_widget.dart';
 import 'audio_file_picker_screen.dart';
-import 'scheduled_notifications_screen.dart';
+import 'advanced_scheduling_screen.dart';
+import 'scheduled_notifications_management_screen.dart';
 import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -92,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _permissionsGranted = granted;
     });
-    
+
     if (granted) {
       _showSuccessSnackBar('Permissions granted successfully');
     } else {
@@ -149,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onStop: _stopAudio,
             onClearAll: _clearAll,
           ),
-          
+
           // Permissions Status
           if (!_permissionsGranted)
             Container(
@@ -182,7 +183,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-          
+
           // Notification Examples
           Expanded(
             child: ListView(
@@ -193,7 +194,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
-                
                 NotificationCard(
                   title: 'Asset Audio Notification',
                   description: 'Play notification with audio from app assets',
@@ -202,7 +202,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     NotificationHelper.createAssetAudioNotification(),
                   ),
                 ),
-                
                 NotificationCard(
                   title: 'Looping Asset Audio',
                   description: 'Play looping audio from assets (like an alarm)',
@@ -215,16 +214,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-                
                 NotificationCard(
                   title: 'Alarm Style Notification',
-                  description: 'High priority notification with alarm-like behavior',
+                  description:
+                      'High priority notification with alarm-like behavior',
                   icon: Icons.alarm,
                   onTap: () => _showNotification(
                     NotificationHelper.createAlarmNotification(),
                   ),
                 ),
-                
                 NotificationCard(
                   title: 'Reminder Style Notification',
                   description: 'Gentle reminder with fade in/out audio',
@@ -233,7 +231,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     NotificationHelper.createReminderNotification(),
                   ),
                 ),
-                
                 NotificationCard(
                   title: 'Custom Audio File',
                   description: 'Pick and play audio from device storage',
@@ -247,16 +244,30 @@ class _HomeScreenState extends State<HomeScreen> {
                     );
                   },
                 ),
-                
                 NotificationCard(
-                  title: 'Scheduled Notifications',
-                  description: 'Schedule notifications for future times',
+                  title: 'Advanced Scheduling',
+                  description:
+                      'Create recurring and complex scheduled notifications',
+                  icon: Icons.event_repeat,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AdvancedSchedulingScreen(),
+                      ),
+                    );
+                  },
+                ),
+                NotificationCard(
+                  title: 'Manage Scheduled',
+                  description: 'View and manage your scheduled notifications',
                   icon: Icons.schedule,
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const ScheduledNotificationsScreen(),
+                        builder: (context) =>
+                            const ScheduledNotificationsManagementScreen(),
                       ),
                     );
                   },

@@ -194,24 +194,30 @@ extension NotificationManager: UNUserNotificationCenterDelegate {
     ) {
         let userInfo = response.notification.request.content.userInfo
         let notificationId = userInfo["notificationId"] as? String ?? ""
-        
+        let isScheduled = userInfo["isScheduled"] as? Bool ?? false
+
+        // Handle scheduled notification completion
+        if isScheduled {
+            handleScheduledNotificationCompletion(userInfo: userInfo)
+        }
+
         switch response.actionIdentifier {
         case "STOP_AUDIO_ACTION":
             // Handle stop audio action
             handleStopAudioAction(notificationId: notificationId)
-            
+
         case "DISMISS_ACTION":
             // Handle dismiss action
             handleDismissAction(notificationId: notificationId)
-            
+
         case UNNotificationDefaultActionIdentifier:
             // Handle notification tap
             handleNotificationTap(notificationId: notificationId, userInfo: userInfo)
-            
+
         default:
             break
         }
-        
+
         completionHandler()
     }
     
@@ -227,10 +233,75 @@ extension NotificationManager: UNUserNotificationCenterDelegate {
     
     private func handleNotificationTap(notificationId: String, userInfo: [AnyHashable: Any]) {
         print("NotificationManager: Notification tapped: \(notificationId)")
-        
+
         // If app is not active, bring it to foreground
         if UIApplication.shared.applicationState != .active {
             // The app will be brought to foreground automatically
+        }
+    }
+
+    private func handleScheduledNotificationCompletion(userInfo: [AnyHashable: Any]) {
+        guard let notificationIdString = userInfo["notificationId"] as? String,
+              let notificationId = Int(notificationIdString) else {
+            return
+        }
+
+        let scheduleId = 10000 + notificationId
+        let persistenceManager = NotificationPersistenceManager()
+
+        // Increment trigger count
+        persistenceManager.incrementTriggerCount(scheduleId: scheduleId)
+
+        // Handle recurring notifications
+        handleRecurringNotification(scheduleId: scheduleId, persistenceManager: persistenceManager)
+    }
+
+    private func handleRecurringNotification(scheduleId: Int, persistenceManager: NotificationPersistenceManager) {
+        guard let scheduleData = persistenceManager.getScheduledNotification(scheduleId: scheduleId),
+              let notificationData = scheduleData["notification"] as? [String: Any],
+              let schedule = scheduleData["schedule"] as? [String: Any] else {
+            return
+        }
+
+        let scheduleType = schedule["scheduleType"] as? String
+        if scheduleType == nil || scheduleType == "oneTime" {
+            // One-time notification, mark as inactive
+            persistenceManager.markAsInactive(scheduleId: scheduleId)
+            return
+        }
+
+        // Check if we've reached the maximum occurrences
+        if let maxOccurrences = schedule["maxOccurrences"] as? Int {
+            let triggerCount = scheduleData["triggerCount"] as? Int ?? 0
+            if triggerCount >= maxOccurrences {
+                print("NotificationManager: Reached maximum occurrences for notification \(scheduleId)")
+                persistenceManager.markAsInactive(scheduleId: scheduleId)
+                return
+            }
+        }
+
+        // Check if we've passed the end date
+        if let endDate = schedule["endDate"] as? Double {
+            let now = Date().timeIntervalSince1970 * 1000
+            if now > endDate {
+                print("NotificationManager: Passed end date for notification \(scheduleId)")
+                persistenceManager.markAsInactive(scheduleId: scheduleId)
+                return
+            }
+        }
+
+        // Schedule the next occurrence
+        let scheduleManager = ScheduleManager()
+        let success = scheduleManager.scheduleNotification(
+            notificationData: notificationData,
+            scheduleData: schedule
+        )
+
+        if success {
+            print("NotificationManager: Scheduled next occurrence for recurring notification \(scheduleId)")
+        } else {
+            print("NotificationManager: Failed to schedule next occurrence for notification \(scheduleId)")
+            persistenceManager.markAsInactive(scheduleId: scheduleId)
         }
     }
 }

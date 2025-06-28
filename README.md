@@ -10,6 +10,11 @@ A Flutter plugin for native Android and iOS notifications with custom sound play
 - 🎯 **Background Audio**: Continue audio playback when app is backgrounded or closed
 - 📁 **Flexible Audio Sources**: Support for asset files and external filesystem files
 - ⚙️ **Configurable**: Extensive customization options for notifications and audio
+- ⏰ **Advanced Scheduling**: Schedule one-time and recurring notifications
+- 🔁 **Recurring Patterns**: Daily, weekly, monthly, yearly, and custom intervals
+- 🌍 **Timezone Support**: Proper timezone handling for scheduled notifications
+- 📊 **Schedule Management**: Query, update, and cancel scheduled notifications
+- 🔄 **Boot Recovery**: Automatically restore scheduled notifications after device restart
 
 ## Installation
 
@@ -110,6 +115,118 @@ final notification = SmartNotification(
 await SmartLocalNotification.showNotification(notification);
 ```
 
+## Advanced Scheduling
+
+The plugin supports advanced scheduling features including recurring notifications, timezone handling, and schedule management.
+
+### One-time Scheduled Notification
+
+```dart
+final notification = SmartNotification(
+  id: 1,
+  title: 'Scheduled Reminder',
+  body: 'This notification was scheduled',
+  schedule: NotificationSchedule.oneTime(
+    scheduledTime: DateTime.now().add(Duration(hours: 2)),
+  ),
+  audioSettings: AudioSettings(
+    audioPath: 'reminder.mp3',
+    sourceType: AudioSourceType.asset,
+  ),
+);
+
+await SmartLocalNotification.scheduleNotification(notification);
+```
+
+### Daily Recurring Notification
+
+```dart
+final notification = SmartNotification(
+  id: 2,
+  title: 'Daily Reminder',
+  body: 'Don\'t forget your daily task',
+  schedule: NotificationSchedule.daily(
+    scheduledTime: DateTime(2024, 1, 1, 9, 0), // 9 AM daily
+    endDate: DateTime(2024, 12, 31), // Stop at end of year
+    maxOccurrences: 365, // Or limit by count
+  ),
+  audioSettings: AudioSettings(
+    audioPath: 'daily_reminder.mp3',
+    sourceType: AudioSourceType.asset,
+  ),
+);
+
+await SmartLocalNotification.scheduleNotification(notification);
+```
+
+### Weekly Recurring Notification
+
+```dart
+final notification = SmartNotification(
+  id: 3,
+  title: 'Weekly Meeting',
+  body: 'Team meeting in 15 minutes',
+  schedule: NotificationSchedule.weekly(
+    scheduledTime: DateTime(2024, 1, 1, 14, 45), // 2:45 PM
+    weekDays: [WeekDay.monday, WeekDay.wednesday, WeekDay.friday],
+    endDate: DateTime(2024, 6, 30),
+  ),
+  audioSettings: AudioSettings(
+    audioPath: 'meeting_reminder.mp3',
+    sourceType: AudioSourceType.asset,
+  ),
+);
+
+await SmartLocalNotification.scheduleNotification(notification);
+```
+
+### Custom Interval Notification
+
+```dart
+final notification = SmartNotification(
+  id: 4,
+  title: 'Hydration Reminder',
+  body: 'Time to drink water!',
+  schedule: NotificationSchedule.custom(
+    scheduledTime: DateTime.now().add(Duration(minutes: 30)),
+    interval: 2, // Every 2 hours
+    intervalUnit: 'hours',
+    maxOccurrences: 8, // 8 times per day
+  ),
+  audioSettings: AudioSettings(
+    audioPath: 'water_reminder.mp3',
+    sourceType: AudioSourceType.asset,
+  ),
+);
+
+await SmartLocalNotification.scheduleNotification(notification);
+```
+
+### Managing Scheduled Notifications
+
+```dart
+// Get all active scheduled notifications
+final activeNotifications = await SmartLocalNotification.getScheduledNotifications(
+  ScheduledNotificationQuery(isActive: true)
+);
+
+// Get recurring notifications
+final recurringNotifications = await SmartLocalNotification.getScheduledNotifications(
+  ScheduledNotificationQuery(isRecurring: true)
+);
+
+// Cancel a specific scheduled notification
+await SmartLocalNotification.cancelScheduledNotification(1);
+
+// Cancel all scheduled notifications
+await SmartLocalNotification.cancelAllScheduledNotifications();
+
+// Batch schedule multiple notifications
+final notifications = [notification1, notification2, notification3];
+final result = await SmartLocalNotification.batchScheduleNotifications(notifications);
+print('Scheduled: ${result.successCount}, Failed: ${result.failureCount}');
+```
+
 ## API Reference
 
 ### SmartLocalNotification
@@ -126,6 +243,12 @@ Main class for interacting with the plugin.
 - `isAudioPlaying()` - Check if audio is currently playing
 - `requestPermissions()` - Request notification permissions
 - `arePermissionsGranted()` - Check if permissions are granted
+- `scheduleNotification(SmartNotification)` - Schedule a notification for future delivery
+- `cancelScheduledNotification(int id)` - Cancel a scheduled notification
+- `cancelAllScheduledNotifications()` - Cancel all scheduled notifications
+- `getScheduledNotifications([ScheduledNotificationQuery])` - Get scheduled notifications
+- `updateScheduledNotification(String scheduleId, Map updates)` - Update a scheduled notification
+- `batchScheduleNotifications(List<SmartNotification>)` - Schedule multiple notifications
 
 ### Models
 

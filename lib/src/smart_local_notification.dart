@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'models/smart_notification.dart';
+import 'models/scheduled_notification_info.dart';
 import 'smart_local_notification_platform_interface.dart';
 
 /// Main class for Smart Local Notification plugin.
@@ -214,6 +215,180 @@ class SmartLocalNotification {
     return SmartLocalNotificationPlatform.instance.arePermissionsGranted();
   }
 
+  /// Schedule a notification for future delivery.
+  ///
+  /// [notification] - The notification to schedule with enhanced scheduling configuration.
+  ///
+  /// Returns `true` if the notification was scheduled successfully, `false` otherwise.
+  ///
+  /// This method supports both simple scheduled times and complex recurring patterns
+  /// with timezone handling, end dates, and maximum occurrence limits.
+  ///
+  /// Example:
+  /// ```dart
+  /// final notification = SmartNotification(
+  ///   id: 1,
+  ///   title: 'Daily Reminder',
+  ///   body: 'Don\'t forget your daily task',
+  ///   schedule: NotificationSchedule.daily(
+  ///     scheduledTime: DateTime(2024, 1, 1, 9, 0), // 9 AM
+  ///     endDate: DateTime(2024, 12, 31),
+  ///   ),
+  ///   audioSettings: AudioSettings(
+  ///     audioPath: 'reminder.mp3',
+  ///     sourceType: AudioSourceType.asset,
+  ///   ),
+  /// );
+  ///
+  /// final success = await SmartLocalNotification.scheduleNotification(notification);
+  /// ```
+  static Future<bool> scheduleNotification(
+      SmartNotification notification) async {
+    // Validate that the notification has scheduling information
+    if (notification.schedule == null && notification.scheduledTime == null) {
+      _emitEvent(SmartNotificationEvent(
+        type: SmartNotificationEventType.error,
+        notificationId: notification.id,
+        error:
+            'Notification must have schedule or scheduledTime for scheduling',
+      ));
+      return false;
+    }
+
+    // Validate schedule if present
+    if (notification.schedule != null) {
+      final schedule = notification.schedule!;
+      if (!schedule.isValid) {
+        _emitEvent(SmartNotificationEvent(
+          type: SmartNotificationEventType.error,
+          notificationId: notification.id,
+          error: 'Invalid schedule configuration',
+        ));
+        return false;
+      }
+
+      final nextOccurrence = schedule.getNextOccurrence();
+      if (nextOccurrence == null) {
+        _emitEvent(SmartNotificationEvent(
+          type: SmartNotificationEventType.error,
+          notificationId: notification.id,
+          error: 'No future occurrences for this schedule',
+        ));
+        return false;
+      }
+    }
+
+    try {
+      final success = await SmartLocalNotificationPlatform.instance
+          .scheduleNotification(notification);
+
+      if (success) {
+        _emitEvent(SmartNotificationEvent(
+          type: SmartNotificationEventType.notificationScheduled,
+          notificationId: notification.id,
+        ));
+      }
+
+      return success;
+    } catch (e) {
+      _emitEvent(SmartNotificationEvent(
+        type: SmartNotificationEventType.error,
+        notificationId: notification.id,
+        error: 'Failed to schedule notification: $e',
+      ));
+      return false;
+    }
+  }
+
+  /// Cancel a scheduled notification by ID.
+  ///
+  /// [id] - The ID of the notification to cancel.
+  ///
+  /// Returns `true` if the notification was cancelled successfully, `false` otherwise.
+  ///
+  /// Example:
+  /// ```dart
+  /// await SmartLocalNotification.cancelScheduledNotification(1);
+  /// ```
+  static Future<bool> cancelScheduledNotification(int id) async {
+    try {
+      final success = await SmartLocalNotificationPlatform.instance
+          .cancelScheduledNotification(id);
+
+      if (success) {
+        _emitEvent(SmartNotificationEvent(
+          type: SmartNotificationEventType.notificationCancelled,
+          notificationId: id,
+        ));
+      }
+
+      return success;
+    } catch (e) {
+      _emitEvent(SmartNotificationEvent(
+        type: SmartNotificationEventType.error,
+        notificationId: id,
+        error: 'Failed to cancel scheduled notification: $e',
+      ));
+      return false;
+    }
+  }
+
+  /// Cancel all scheduled notifications.
+  ///
+  /// Returns `true` if all notifications were cancelled successfully, `false` otherwise.
+  ///
+  /// Example:
+  /// ```dart
+  /// await SmartLocalNotification.cancelAllScheduledNotifications();
+  /// ```
+  static Future<bool> cancelAllScheduledNotifications() async {
+    try {
+      final success = await SmartLocalNotificationPlatform.instance
+          .cancelAllScheduledNotifications();
+
+      if (success) {
+        _emitEvent(SmartNotificationEvent(
+          type: SmartNotificationEventType.allNotificationsCancelled,
+        ));
+      }
+
+      return success;
+    } catch (e) {
+      _emitEvent(SmartNotificationEvent(
+        type: SmartNotificationEventType.error,
+        error: 'Failed to cancel all scheduled notifications: $e',
+      ));
+      return false;
+    }
+  }
+
+  /// Get scheduled notifications based on query parameters.
+  ///
+  /// [query] - Optional query parameters to filter results.
+  ///
+  /// Returns a list of [ScheduledNotificationInfo] objects.
+  ///
+  /// Example:
+  /// ```dart
+  /// // Get all active scheduled notifications
+  /// final activeNotifications = await SmartLocalNotification.getScheduledNotifications(
+  ///   ScheduledNotificationQuery(isActive: true)
+  /// );
+  /// ```
+  static Future<List<ScheduledNotificationInfo>> getScheduledNotifications(
+      [ScheduledNotificationQuery? query]) async {
+    try {
+      return await SmartLocalNotificationPlatform.instance
+          .getScheduledNotifications(query);
+    } catch (e) {
+      _emitEvent(SmartNotificationEvent(
+        type: SmartNotificationEventType.error,
+        error: 'Failed to get scheduled notifications: $e',
+      ));
+      return [];
+    }
+  }
+
   /// Emit a notification event.
   ///
   /// This method is used internally by the platform implementations
@@ -246,6 +421,15 @@ enum SmartNotificationEventType {
 
   /// Audio playback completed.
   audioCompleted,
+
+  /// Notification was scheduled successfully.
+  notificationScheduled,
+
+  /// Notification was cancelled.
+  notificationCancelled,
+
+  /// All notifications were cancelled.
+  allNotificationsCancelled,
 
   /// An error occurred.
   error,

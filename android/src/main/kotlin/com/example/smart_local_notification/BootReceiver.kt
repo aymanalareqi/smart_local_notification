@@ -3,6 +3,8 @@ package com.example.smart_local_notification
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
+import android.util.Log
 
 class BootReceiver : BroadcastReceiver() {
 
@@ -23,9 +25,19 @@ class BootReceiver : BroadcastReceiver() {
         // Initialize any necessary components after boot
         // This could include restoring scheduled notifications
         // or setting up background services if needed
-        
-        // For now, we'll just ensure the plugin is ready
-        // In a real implementation, you might want to restore
-        // any scheduled notifications from persistent storage
+
+        try {
+            // Reschedule all active notifications after boot
+            val scheduleManager = SmartScheduleManager(context)
+            scheduleManager.rescheduleAllNotifications()
+
+            // Clean up expired notifications
+            val persistenceManager = NotificationPersistenceManager(context)
+            persistenceManager.cleanupExpiredNotifications()
+
+            Log.d("BootReceiver", "Successfully restored scheduled notifications after boot")
+        } catch (e: Exception) {
+            Log.e("BootReceiver", "Failed to restore scheduled notifications after boot", e)
+        }
     }
 }
