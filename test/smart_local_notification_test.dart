@@ -7,7 +7,6 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 class MockSmartLocalNotificationPlatform
     with MockPlatformInterfaceMixin
     implements SmartLocalNotificationPlatform {
-
   @override
   Future<bool> initialize() async {
     return true;
@@ -47,24 +46,75 @@ class MockSmartLocalNotificationPlatform
   Future<bool> arePermissionsGranted() async {
     return true;
   }
+
+  @override
+  Future<bool> scheduleNotification(SmartNotification notification) async {
+    return true;
+  }
+
+  @override
+  Future<bool> cancelScheduledNotification(int id) async {
+    return true;
+  }
+
+  @override
+  Future<bool> cancelAllScheduledNotifications() async {
+    return true;
+  }
+
+  @override
+  Future<List<ScheduledNotificationInfo>> getScheduledNotifications(
+      [ScheduledNotificationQuery? query]) async {
+    return [];
+  }
+
+  @override
+  Future<bool> updateScheduledNotification(
+      String scheduleId, Map<String, dynamic> updates) async {
+    return true;
+  }
+
+  @override
+  Future<BatchScheduleResult> batchScheduleNotifications(
+      List<SmartNotification> notifications) async {
+    // Convert SmartNotifications to ScheduledNotificationInfo for mock
+    final successful = notifications
+        .map((notification) => ScheduledNotificationInfo(
+              scheduleId: notification.id.toString(),
+              notification: notification,
+              createdAt: DateTime.now(),
+              updatedAt: DateTime.now(),
+            ))
+        .toList();
+
+    return BatchScheduleResult(
+      successful: successful,
+      failed: [],
+      total: notifications.length,
+    );
+  }
 }
 
 void main() {
-  final SmartLocalNotificationPlatform initialPlatform = SmartLocalNotificationPlatform.instance;
+  final SmartLocalNotificationPlatform initialPlatform =
+      SmartLocalNotificationPlatform.instance;
 
   test('$MethodChannelSmartLocalNotification is the default instance', () {
-    expect(initialPlatform, isInstanceOf<MethodChannelSmartLocalNotification>());
+    expect(
+        initialPlatform, isInstanceOf<MethodChannelSmartLocalNotification>());
   });
 
   test('initialize', () async {
-    MockSmartLocalNotificationPlatform fakePlatform = MockSmartLocalNotificationPlatform();
+    MockSmartLocalNotificationPlatform fakePlatform =
+        MockSmartLocalNotificationPlatform();
     SmartLocalNotificationPlatform.instance = fakePlatform;
 
     expect(await SmartLocalNotification.initialize(), true);
   });
 
   test('showNotification', () async {
-    MockSmartLocalNotificationPlatform fakePlatform = MockSmartLocalNotificationPlatform();
+    MockSmartLocalNotificationPlatform fakePlatform =
+        MockSmartLocalNotificationPlatform();
     SmartLocalNotificationPlatform.instance = fakePlatform;
 
     final notification = SmartNotification(
@@ -77,42 +127,48 @@ void main() {
   });
 
   test('cancelNotification', () async {
-    MockSmartLocalNotificationPlatform fakePlatform = MockSmartLocalNotificationPlatform();
+    MockSmartLocalNotificationPlatform fakePlatform =
+        MockSmartLocalNotificationPlatform();
     SmartLocalNotificationPlatform.instance = fakePlatform;
 
     expect(await SmartLocalNotification.cancelNotification(1), true);
   });
 
   test('cancelAllNotifications', () async {
-    MockSmartLocalNotificationPlatform fakePlatform = MockSmartLocalNotificationPlatform();
+    MockSmartLocalNotificationPlatform fakePlatform =
+        MockSmartLocalNotificationPlatform();
     SmartLocalNotificationPlatform.instance = fakePlatform;
 
     expect(await SmartLocalNotification.cancelAllNotifications(), true);
   });
 
   test('stopAudio', () async {
-    MockSmartLocalNotificationPlatform fakePlatform = MockSmartLocalNotificationPlatform();
+    MockSmartLocalNotificationPlatform fakePlatform =
+        MockSmartLocalNotificationPlatform();
     SmartLocalNotificationPlatform.instance = fakePlatform;
 
     expect(await SmartLocalNotification.stopAudio(), true);
   });
 
   test('isAudioPlaying', () async {
-    MockSmartLocalNotificationPlatform fakePlatform = MockSmartLocalNotificationPlatform();
+    MockSmartLocalNotificationPlatform fakePlatform =
+        MockSmartLocalNotificationPlatform();
     SmartLocalNotificationPlatform.instance = fakePlatform;
 
     expect(await SmartLocalNotification.isAudioPlaying(), false);
   });
 
   test('requestPermissions', () async {
-    MockSmartLocalNotificationPlatform fakePlatform = MockSmartLocalNotificationPlatform();
+    MockSmartLocalNotificationPlatform fakePlatform =
+        MockSmartLocalNotificationPlatform();
     SmartLocalNotificationPlatform.instance = fakePlatform;
 
     expect(await SmartLocalNotification.requestPermissions(), true);
   });
 
   test('arePermissionsGranted', () async {
-    MockSmartLocalNotificationPlatform fakePlatform = MockSmartLocalNotificationPlatform();
+    MockSmartLocalNotificationPlatform fakePlatform =
+        MockSmartLocalNotificationPlatform();
     SmartLocalNotificationPlatform.instance = fakePlatform;
 
     expect(await SmartLocalNotification.arePermissionsGranted(), true);

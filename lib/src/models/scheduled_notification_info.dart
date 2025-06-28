@@ -80,8 +80,12 @@ class ScheduledNotificationInfo {
 
   /// Creates a [ScheduledNotificationInfo] from a map.
   factory ScheduledNotificationInfo.fromMap(Map<String, dynamic> map) {
+    // Handle scheduleId which can be either int or string from native platforms
+    final scheduleIdValue = map['scheduleId'];
+    final scheduleId = scheduleIdValue?.toString() ?? '';
+
     return ScheduledNotificationInfo(
-      scheduleId: map['scheduleId'] ?? '',
+      scheduleId: scheduleId,
       notification: SmartNotification.fromMap(map['notification'] ?? {}),
       createdAt: DateTime.fromMillisecondsSinceEpoch(map['createdAt'] ?? 0),
       updatedAt: DateTime.fromMillisecondsSinceEpoch(map['updatedAt'] ?? 0),
@@ -90,7 +94,7 @@ class ScheduledNotificationInfo {
           : null,
       triggerCount: map['triggerCount'] ?? 0,
       isActive: map['isActive'] ?? true,
-      platformScheduleId: map['platformScheduleId'],
+      platformScheduleId: map['platformScheduleId']?.toString(),
     );
   }
 
