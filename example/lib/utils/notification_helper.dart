@@ -49,6 +49,55 @@ class NotificationHelper {
         audioStatus.isGranted;
   }
 
+  /// Get detailed permission status for all required permissions.
+  static Future<Map<String, PermissionStatus>>
+      getDetailedPermissionStatus() async {
+    final statuses = <String, PermissionStatus>{};
+
+    // Check individual permissions
+    statuses['notification'] = await Permission.notification.status;
+    statuses['audio'] = await Permission.audio.status;
+    statuses['storage'] = await Permission.storage.status;
+    statuses['microphone'] = await Permission.microphone.status;
+
+    // Check plugin-specific permissions
+    final pluginPermissions =
+        await SmartLocalNotification.arePermissionsGranted();
+    statuses['plugin'] =
+        pluginPermissions ? PermissionStatus.granted : PermissionStatus.denied;
+
+    return statuses;
+  }
+
+  /// Request specific permission by name.
+  static Future<PermissionStatus> requestSpecificPermission(
+      String permissionName) async {
+    switch (permissionName.toLowerCase()) {
+      case 'notification':
+        return await Permission.notification.request();
+      case 'audio':
+        return await Permission.audio.request();
+      case 'storage':
+        return await Permission.storage.request();
+      case 'microphone':
+        return await Permission.microphone.request();
+      case 'plugin':
+        final granted = await SmartLocalNotification.requestPermissions();
+        return granted ? PermissionStatus.granted : PermissionStatus.denied;
+      default:
+        return PermissionStatus.denied;
+    }
+  }
+
+  /// Check if critical permissions are granted (minimum required for basic functionality).
+  static Future<bool> areCriticalPermissionsGranted() async {
+    final pluginPermissions =
+        await SmartLocalNotification.arePermissionsGranted();
+    final notificationStatus = await Permission.notification.status;
+
+    return pluginPermissions && notificationStatus.isGranted;
+  }
+
   /// Get the next notification ID.
   static int getNextId() {
     return _notificationIdCounter++;

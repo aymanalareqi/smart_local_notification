@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:smart_local_notification/smart_local_notification.dart';
 import '../utils/notification_helper.dart';
+import 'permissions_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -22,7 +23,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _checkStatus() async {
     final permissions = await NotificationHelper.arePermissionsGranted();
     final audioPlaying = await SmartLocalNotification.isAudioPlaying();
-    
+
     setState(() {
       _permissionsGranted = permissions;
       _isAudioPlaying = audioPlaying;
@@ -43,7 +44,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     setState(() {
       _permissionsGranted = granted;
     });
-    
+
     _showSnackBar(
       granted ? 'Permissions granted' : 'Some permissions were denied',
       isError: !granted,
@@ -104,7 +105,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
-          
+
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -137,30 +138,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
           ),
-          
+
           const SizedBox(height: 32),
-          
+
           // Actions Section
           const Text(
             'Actions',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
-          
+
           _ActionCard(
             title: 'Test Basic Notification',
             description: 'Send a simple notification without custom audio',
             icon: Icons.notifications,
             onTap: _testBasicNotification,
           ),
-          
+
           _ActionCard(
-            title: 'Request Permissions',
-            description: 'Request all necessary permissions for the app',
+            title: 'Manage Permissions',
+            description: 'View and manage app permissions in detail',
+            icon: Icons.admin_panel_settings,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PermissionsScreen(),
+                ),
+              ).then((_) => _checkStatus());
+            },
+          ),
+
+          _ActionCard(
+            title: 'Quick Permission Request',
+            description: 'Request all necessary permissions at once',
             icon: Icons.security,
             onTap: _requestPermissions,
           ),
-          
+
           _ActionCard(
             title: 'Stop Audio',
             description: 'Stop any currently playing audio',
@@ -168,7 +183,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onTap: _stopAudio,
             enabled: _isAudioPlaying,
           ),
-          
+
           _ActionCard(
             title: 'Clear All Notifications',
             description: 'Remove all notifications and stop audio',
@@ -176,16 +191,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onTap: _clearAllNotifications,
             color: Colors.red,
           ),
-          
+
           const SizedBox(height: 32),
-          
+
           // Information Section
           const Text(
             'Information',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
-          
+
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -290,7 +305,7 @@ class _ActionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cardColor = color ?? Theme.of(context).colorScheme.primary;
-    
+
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: InkWell(
@@ -304,8 +319,8 @@ class _ActionCard extends StatelessWidget {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: enabled 
-                      ? cardColor.withOpacity(0.1) 
+                  color: enabled
+                      ? cardColor.withOpacity(0.1)
                       : Colors.grey.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),

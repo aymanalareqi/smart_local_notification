@@ -3,6 +3,7 @@ import 'package:smart_local_notification/smart_local_notification.dart';
 import '../utils/notification_helper.dart';
 import '../widgets/notification_card.dart';
 import '../widgets/audio_status_widget.dart';
+import '../widgets/permission_request_widget.dart';
 import 'audio_file_picker_screen.dart';
 import 'advanced_scheduling_screen.dart';
 import 'scheduled_notifications_management_screen.dart';
@@ -17,20 +18,11 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool _isAudioPlaying = false;
-  bool _permissionsGranted = false;
 
   @override
   void initState() {
     super.initState();
-    _checkPermissions();
     _setupAudioStatusListener();
-  }
-
-  Future<void> _checkPermissions() async {
-    final granted = await NotificationHelper.arePermissionsGranted();
-    setState(() {
-      _permissionsGranted = granted;
-    });
   }
 
   void _setupAudioStatusListener() {
@@ -88,19 +80,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Future<void> _requestPermissions() async {
-    final granted = await NotificationHelper.requestPermissions();
-    setState(() {
-      _permissionsGranted = granted;
-    });
-
-    if (granted) {
-      _showSuccessSnackBar('Permissions granted successfully');
-    } else {
-      _showErrorSnackBar('Some permissions were not granted');
-    }
-  }
-
   Future<void> _showNotification(SmartNotification notification) async {
     final success = await SmartLocalNotification.showNotification(notification);
     if (success) {
@@ -152,37 +131,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
 
           // Permissions Status
-          if (!_permissionsGranted)
-            Container(
-              width: double.infinity,
-              margin: const EdgeInsets.all(16),
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.orange.shade100,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.orange),
-              ),
-              child: Column(
-                children: [
-                  const Icon(Icons.warning, color: Colors.orange, size: 32),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Permissions Required',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    'Some permissions are not granted. Please grant permissions to use all features.',
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  ElevatedButton(
-                    onPressed: _requestPermissions,
-                    child: const Text('Grant Permissions'),
-                  ),
-                ],
-              ),
-            ),
+          const PermissionRequestWidget(),
 
           // Notification Examples
           Expanded(
