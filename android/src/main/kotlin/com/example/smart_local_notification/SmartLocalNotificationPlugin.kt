@@ -9,9 +9,10 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import io.flutter.plugin.common.PluginRegistry
 
 /** SmartLocalNotificationPlugin */
-class SmartLocalNotificationPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
+class SmartLocalNotificationPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, PluginRegistry.RequestPermissionsResultListener {
   private lateinit var channel: MethodChannel
   private lateinit var context: Context
   private var notificationManager: SmartNotificationManager? = null
@@ -149,8 +150,7 @@ class SmartLocalNotificationPlugin: FlutterPlugin, MethodCallHandler, ActivityAw
 
   private fun requestPermissions(result: Result) {
     try {
-      val granted = permissionManager?.requestPermissions() ?: false
-      result.success(granted)
+      permissionManager?.requestPermissions(result)
     } catch (e: Exception) {
       result.success(false)
     }
@@ -172,6 +172,7 @@ class SmartLocalNotificationPlugin: FlutterPlugin, MethodCallHandler, ActivityAw
 
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
     permissionManager?.setActivity(binding.activity)
+    binding.addRequestPermissionsResultListener(this)
   }
 
   override fun onDetachedFromActivityForConfigChanges() {
@@ -180,10 +181,20 @@ class SmartLocalNotificationPlugin: FlutterPlugin, MethodCallHandler, ActivityAw
 
   override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
     permissionManager?.setActivity(binding.activity)
+    binding.addRequestPermissionsResultListener(this)
   }
 
   override fun onDetachedFromActivity() {
     permissionManager?.setActivity(null)
+  }
+
+  override fun onRequestPermissionsResult(
+    requestCode: Int,
+    permissions: Array<out String>,
+    grantResults: IntArray
+  ): Boolean {
+    permissionManager?.handlePermissionResult(requestCode, permissions, grantResults)
+    return true
   }
 
   private fun scheduleNotification(call: MethodCall, result: Result) {

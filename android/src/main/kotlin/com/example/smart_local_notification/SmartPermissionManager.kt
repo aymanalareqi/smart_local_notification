@@ -8,9 +8,11 @@ import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import io.flutter.plugin.common.MethodChannel
 
 class SmartPermissionManager(private val context: Context) {
     private var activity: Activity? = null
+    private var pendingResult: MethodChannel.Result? = null
 
     companion object {
         const val PERMISSION_REQUEST_CODE = 1001
@@ -26,35 +28,41 @@ class SmartPermissionManager(private val context: Context) {
         this.activity = activity
     }
 
-    fun requestPermissions(): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requestNotificationPermission()
+    fun requestPermissions(result: MethodChannel.Result) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestNotificationPermission(result)
         } else {
-            // For older versions, notification permission is granted by default
-            true
+            // For older versions, check if notifications are enabled
+            val enabled = NotificationManagerCompat.from(context).areNotificationsEnabled()
+            result.success(enabled)
         }
     }
 
-    private fun requestNotificationPermission(): Boolean {
-        val activity = this.activity ?: return false
+    private fun requestNotificationPermission(result: MethodChannel.Result) {
+        val activity = this.activity
+        if (activity == null) {
+            result.success(false)
+            return
+        }
 
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(
                     context,
                     Manifest.permission.POST_NOTIFICATIONS
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
+                // Store the result to respond later
+                pendingResult = result
                 ActivityCompat.requestPermissions(
                     activity,
                     arrayOf(Manifest.permission.POST_NOTIFICATIONS),
                     PERMISSION_REQUEST_CODE
                 )
-                false
             } else {
-                true
+                result.success(true)
             }
         } else {
-            true
+            result.success(true)
         }
     }
 
@@ -113,10 +121,11 @@ class SmartPermissionManager(private val context: Context) {
         requestCode: Int,
         permissions: Array<out String>,
         grantResults: IntArray
-    ): Boolean {
-        if (requestCode == PERMISSION_REQUEST_CODE) {
-            return grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }
+    ) {
+        if (requestCode == PERMISSION_REQUEST_CODE && pendingResult != null) {
+            val granted = grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }
+            pendingResult?.success(granted)
+            pendingResult = null
         }
-        return false
     }
 }
