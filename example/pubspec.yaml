@@ -28,5 +28,5 @@ flutter:
     - assets/audio/
     # - assets/images/
 
-  # Example audio files for testing
-  # You should add actual audio files to assets/audio/ directory
+  # Example audio file for testing
+  # You should add athan.mp3 to assets/audio/ directory

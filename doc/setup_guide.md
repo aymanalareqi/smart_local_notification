@@ -157,7 +157,7 @@ Future<void> showBasicNotification() async {
       silent: true, // Silent notification
     ),
     audioSettings: AudioSettings(
-      audioPath: 'notification.mp3', // Asset file
+      audioPath: 'athan.mp3', // Asset file
       sourceType: AudioSourceType.asset,
       volume: 0.8,
     ),
@@ -246,9 +246,7 @@ Create the directory structure:
 ```
 assets/
   audio/
-    notification.mp3
-    alarm.mp3
-    reminder.mp3
+    athan.mp3
 ```
 
 ### 2. Supported Audio Formats

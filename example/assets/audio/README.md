@@ -4,22 +4,16 @@ This directory should contain sample audio files for testing the Smart Local Not
 
 ## Required Audio Files
 
-To fully test the example app, please add the following audio files to this directory:
+To fully test the example app, please add the following audio file to this directory:
 
-1. **notification.mp3** - A short notification sound (2-5 seconds)
-2. **alarm.mp3** - A longer alarm sound suitable for looping (5-10 seconds)
-3. **reminder.mp3** - A gentle reminder sound (3-7 seconds)
-4. **scheduled.mp3** - A sound for scheduled notifications (2-5 seconds)
+1. **athan.mp3** - The default audio file used for all notification examples (recommended: 5-30 seconds)
 
 ## Audio File Requirements
 
 - **Format**: MP3, WAV, AAC, or M4A
 - **Quality**: 44.1kHz, 16-bit minimum
 - **Size**: Keep files under 1MB for better performance
-- **Length**: 
-  - Notification sounds: 2-5 seconds
-  - Alarm sounds: 5-10 seconds (will be looped)
-  - Reminder sounds: 3-7 seconds
+- **Length**: 5-30 seconds (suitable for various notification types including looping)
 
 ## Sample Audio Sources
 
@@ -35,4 +29,4 @@ If you don't have audio files available, the example app will still work but wil
 
 ## File Naming Convention
 
-Please use the exact filenames listed above for the best experience with the example app. The app is configured to look for these specific files.
+Please use the exact filename "athan.mp3" for the best experience with the example app. The app is configured to use this specific file for all notification audio demonstrations.

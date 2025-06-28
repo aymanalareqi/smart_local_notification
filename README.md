@@ -130,7 +130,7 @@ final notification = SmartNotification(
     scheduledTime: DateTime.now().add(Duration(hours: 2)),
   ),
   audioSettings: AudioSettings(
-    audioPath: 'reminder.mp3',
+    audioPath: 'athan.mp3',
     sourceType: AudioSourceType.asset,
   ),
 );
@@ -151,7 +151,7 @@ final notification = SmartNotification(
     maxOccurrences: 365, // Or limit by count
   ),
   audioSettings: AudioSettings(
-    audioPath: 'daily_reminder.mp3',
+    audioPath: 'athan.mp3',
     sourceType: AudioSourceType.asset,
   ),
 );
@@ -172,7 +172,7 @@ final notification = SmartNotification(
     endDate: DateTime(2024, 6, 30),
   ),
   audioSettings: AudioSettings(
-    audioPath: 'meeting_reminder.mp3',
+    audioPath: 'athan.mp3',
     sourceType: AudioSourceType.asset,
   ),
 );
@@ -194,7 +194,7 @@ final notification = SmartNotification(
     maxOccurrences: 8, // 8 times per day
   ),
   audioSettings: AudioSettings(
-    audioPath: 'water_reminder.mp3',
+    audioPath: 'athan.mp3',
     sourceType: AudioSourceType.asset,
   ),
 );

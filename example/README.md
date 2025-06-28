@@ -42,13 +42,10 @@ cd example
 flutter pub get
 ```
 
-### 2. Add Audio Files
+### 2. Add Audio File
 
-Add sample audio files to `example/assets/audio/`:
-- `notification.mp3` - Short notification sound
-- `alarm.mp3` - Alarm sound for looping
-- `reminder.mp3` - Gentle reminder sound
-- `scheduled.mp3` - Scheduled notification sound
+Add the required audio file to `example/assets/audio/`:
+- `athan.mp3` - Default audio file used for all notification examples
 
 See `example/assets/audio/README.md` for detailed requirements.
 
@@ -164,8 +161,8 @@ flutter run
 ## Troubleshooting
 
 ### Audio Not Playing
-1. Check if audio files exist in `assets/audio/`
-2. Verify audio file formats are supported
+1. Check if `athan.mp3` exists in `assets/audio/`
+2. Verify audio file format is supported (MP3, WAV, AAC, or M4A)
 3. Check device volume and silent mode settings
 4. Ensure permissions are granted
 

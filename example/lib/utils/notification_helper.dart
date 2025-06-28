@@ -120,7 +120,7 @@ class NotificationHelper {
       ),
       audioSettings: AudioSettings(
         audioPath: audioPath ??
-            'notification.mp3', // Will be prefixed with assets/ automatically
+            'assets/audio/athan.mp3', // Will be prefixed with assets/ automatically
         sourceType: AudioSourceType.asset,
         loop: loop,
         volume: 0.8,
@@ -163,7 +163,7 @@ class NotificationHelper {
       title: title ?? 'Alarm Notification',
       body: body ?? 'This is an alarm-style notification with looping audio',
       audioSettings: AudioSettings(
-        audioPath: audioPath ?? 'assets/audio/alarm.mp3',
+        audioPath: audioPath ?? 'assets/audio/athan.mp3',
         sourceType: AudioSourceType.asset,
         loop: true,
         volume: 1.0,
@@ -183,7 +183,7 @@ class NotificationHelper {
       title: title ?? 'Reminder Notification',
       body: body ?? 'This is a gentle reminder with custom audio',
       audioSettings: AudioSettings(
-        audioPath: audioPath ?? 'assets/audio/reminder.mp3',
+        audioPath: audioPath ?? 'assets/audio/athan.mp3',
         sourceType: AudioSourceType.asset,
         loop: false,
         volume: 0.6,
@@ -214,7 +214,7 @@ class NotificationHelper {
         silent: true,
       ),
       audioSettings: AudioSettings(
-        audioPath: audioPath ?? 'scheduled.mp3',
+        audioPath: audioPath ?? 'assets/audio/athan.mp3',
         sourceType: AudioSourceType.asset,
         loop: false,
         volume: 0.7,
@@ -245,7 +245,7 @@ class NotificationHelper {
         silent: true,
       ),
       audioSettings: AudioSettings(
-        audioPath: audioPath ?? 'reminder.mp3',
+        audioPath: audioPath ?? 'assets/audio/athan.mp3',
         sourceType: AudioSourceType.asset,
         loop: false,
         volume: 0.8,
@@ -278,7 +278,7 @@ class NotificationHelper {
         silent: true,
       ),
       audioSettings: AudioSettings(
-        audioPath: audioPath ?? 'reminder.mp3',
+        audioPath: audioPath ?? 'assets/audio/athan.mp3',
         sourceType: AudioSourceType.asset,
         loop: false,
         volume: 0.8,
@@ -313,7 +313,7 @@ class NotificationHelper {
         silent: true,
       ),
       audioSettings: AudioSettings(
-        audioPath: audioPath ?? 'notification.mp3',
+        audioPath: audioPath ?? 'assets/audio/athan.mp3',
         sourceType: AudioSourceType.asset,
         loop: false,
         volume: 0.7,

@@ -235,7 +235,7 @@ class SmartLocalNotification {
   ///     endDate: DateTime(2024, 12, 31),
   ///   ),
   ///   audioSettings: AudioSettings(
-  ///     audioPath: 'reminder.mp3',
+  ///     audioPath: 'athan.mp3',
   ///     sourceType: AudioSourceType.asset,
   ///   ),
   /// );
