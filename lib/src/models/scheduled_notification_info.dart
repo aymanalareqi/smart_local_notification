@@ -1,3 +1,5 @@
+import 'package:smart_local_notification/smart_local_notification.dart';
+
 import 'smart_notification.dart';
 import 'notification_schedule.dart';
 

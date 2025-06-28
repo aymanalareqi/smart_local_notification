@@ -2,26 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<!-- Background app refresh capability -->
-	<key>com.apple.developer.background-modes</key>
-	<array>
-		<string>background-processing</string>
-		<string>background-fetch</string>
-		<string>audio</string>
-	</array>
-	
-	<!-- Local notification capability -->
+	<!-- Time-sensitive notifications capability -->
 	<key>com.apple.developer.usernotifications.time-sensitive</key>
 	<true/>
-	
-	<!-- Audio capability for background audio playback -->
-	<key>com.apple.developer.avfoundation.audio-session-category</key>
-	<string>playback</string>
-	
-	<!-- Network capability for potential future features -->
-	<key>com.apple.developer.networking.networkextension</key>
-	<array>
-		<string>app-proxy-provider</string>
-	</array>
 </dict>
 </plist>

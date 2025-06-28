@@ -44,7 +44,7 @@ import AVFoundation
 }
 
 // MARK: - UNUserNotificationCenterDelegate
-extension AppDelegate: UNUserNotificationCenterDelegate {
+extension AppDelegate {
   // Handle notification when app is in foreground
   override func userNotificationCenter(
     _ center: UNUserNotificationCenter,

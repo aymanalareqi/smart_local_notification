@@ -2,6 +2,13 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>AVAudioSessionCategoryOptions</key>
+	<array>
+		<string>AVAudioSessionCategoryOptionMixWithOthers</string>
+		<string>AVAudioSessionCategoryOptionDuckOthers</string>
+	</array>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
@@ -24,6 +31,19 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>MinimumOSVersion</key>
+	<string>12.0</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app may use the microphone for audio recording features in notifications.</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>background-processing</string>
+		<string>background-fetch</string>
+		<string>audio</string>
+		<string>processing</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -41,62 +61,31 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>CADisableMinimumFrameDurationOnPhone</key>
-	<true/>
-	<key>UIApplicationSupportsIndirectInputEvents</key>
-	<true/>
-
-	<!-- Smart Local Notification Configuration -->
-
-	<!-- Background modes for notification handling and audio playback -->
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>background-processing</string>
-		<string>background-fetch</string>
-		<string>audio</string>
-	</array>
-
-	<!-- Audio session configuration -->
-	<key>AVAudioSessionCategoryOptions</key>
-	<array>
-		<string>AVAudioSessionCategoryOptionMixWithOthers</string>
-		<string>AVAudioSessionCategoryOptionDuckOthers</string>
-	</array>
-
-	<!-- Notification categories and actions -->
 	<key>UNNotificationCategories</key>
 	<array>
 		<dict>
-			<key>identifier</key>
-			<string>SMART_NOTIFICATION_CATEGORY</string>
 			<key>actions</key>
 			<array>
 				<dict>
 					<key>identifier</key>
 					<string>STOP_AUDIO_ACTION</string>
-					<key>title</key>
-					<string>Stop Audio</string>
 					<key>options</key>
 					<integer>1</integer>
+					<key>title</key>
+					<string>Stop Audio</string>
 				</dict>
 				<dict>
 					<key>identifier</key>
 					<string>SNOOZE_ACTION</string>
-					<key>title</key>
-					<string>Snooze</string>
 					<key>options</key>
 					<integer>0</integer>
+					<key>title</key>
+					<string>Snooze</string>
 				</dict>
 			</array>
+			<key>identifier</key>
+			<string>SMART_NOTIFICATION_CATEGORY</string>
 		</dict>
 	</array>
-
-	<!-- Privacy usage descriptions -->
-	<key>NSMicrophoneUsageDescription</key>
-	<string>This app may use the microphone for audio recording features in notifications.</string>
-
-	<!-- Minimum iOS version for notification features -->
-	<key>MinimumOSVersion</key>
-	<string>12.0</string>
 </dict>
 </plist>
