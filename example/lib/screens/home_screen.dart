@@ -177,22 +177,20 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          // Audio Status Widget
-          AudioStatusWidget(
-            isPlaying: _isAudioPlaying,
-            onStop: _stopAudio,
-            onClearAll: _clearAll,
-          ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Audio Status Widget
+            AudioStatusWidget(
+              isPlaying: _isAudioPlaying,
+              onStop: _stopAudio,
+              onClearAll: _clearAll,
+            ),
 
-          // Permissions Status
-          const PermissionRequestWidget(),
+            // Permissions Status
+            const PermissionRequestWidget(),
 
-          // Notification Examples
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.all(16),
+            Column(
               children: [
                 const Text(
                   'Notification Examples',
@@ -286,8 +284,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
